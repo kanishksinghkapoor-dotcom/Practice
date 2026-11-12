@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Janma Mrityu Tathya – Govt. of West Bengal</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- jsQR for real camera-based QR decoding -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+</head>
+<body>
+
+  <!-- BACKGROUND -->
+  <div class="bg-pattern" aria-hidden="true"></div>
+
+  <div class="page-wrapper">
+
+    <!-- ── HEADER ── -->
+    <header class="site-header">
+      <div class="logo-circle">
+        <div class="logo-inner">
+          <svg viewBox="0 0 60 55" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="33">
+            <path d="M30 46s-16-10-16-22a8 8 0 0 1 16-2 8 8 0 0 1 16 2c0 12-16 22-16 22z" fill="#26a69a"/>
+            <circle cx="30" cy="14" r="5" fill="white"/>
+            <path d="M22 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          </svg>
+          <span class="logo-text-bn">জন্ম মৃত্যু তথ্য</span>
+          <span class="logo-text-en">Janma Mrityu Tathya</span>
+        </div>
+      </div>
+      <div class="header-titles">
+        <h1 class="title-main">GOVERNMENT OF WEST BENGAL</h1>
+        <h2 class="title-sub">HEALTH &amp; FAMILY WELFARE DEPARTMENT</h2>
+      </div>
+    </header>
+
+    <!-- ── MAIN CARD ── -->
+    <section class="card" id="main-card">
+
+      <!-- TAB NAV -->
+      <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="qr">QR-CODE VERIFICATION</button>
+        <button class="tab-btn" data-tab="cert">CERTIFICATE NO VERIFICATION</button>
+      </nav>
+
+      <!-- ══════════════ QR TAB ══════════════ -->
+      <div class="tab-content" id="tab-qr">
+
+        <!-- STATE 1: HOME (scan button + steps) -->
+        <div id="state-home">
+          <div class="scan-btn-wrap">
+            <button class="btn-scan" id="scanBtn">
+              <i class="fas fa-qrcode"></i>&nbsp; SCAN QR CODE &nbsp;<i class="fas fa-expand-alt"></i>
+            </button>
+          </div>
+
+          <div class="steps-box">
+            <div class="steps-header">
+              <span class="steps-bar"></span>
+              <h3>Steps for verification</h3>
+            </div>
+            <ul class="steps-list">
+              <li><span class="arrow">→</span> Click on "Scan QR code" above <span class="step-badge">1</span></li>
+              <li><span class="arrow">→</span> A notification will prompt to activate your device's camera <span class="step-badge">2</span></li>
+              <li><span class="arrow">→</span> Point the camera to the QR code on the certificate issued and scan. <span class="step-badge">3</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- STATE 2: SCANNING -->
+        <div id="state-scanning" class="hidden">
+          <p class="cam-instruction">ক্যামেরাটি সার্টিফিকেটের QR কোডের দিকে পয়েন্ট করুন এবং স্বয়ংক্রিয়ভাবে স্ক্যান হতে দিন।</p>
+          <div class="camera-box">
+            <video id="qrVideo" autoplay playsinline muted></video>
+            <canvas id="qrCanvas" style="display:none;"></canvas>
+            <!-- scanning crosshair overlay -->
+            <div class="scan-overlay">
+              <div class="scan-frame">
+                <span class="corner tl"></span><span class="corner tr"></span>
+                <span class="corner bl"></span><span class="corner br"></span>
+                <div class="scan-line"></div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="cam-btn-row">
+            <button class="btn-home" id="backHomeBtn1"><i class="fas fa-house"></i> BACK TO HOME</button>
+          </div>
+
+          <div class="steps-box" style="margin-top:20px;">
+            <div class="steps-header"><span class="steps-bar"></span><h3>Steps for verification</h3></div>
+            <ul class="steps-list">
+              <li><span class="arrow">→</span> Click on "Scan QR code" above <span class="step-badge">1</span></li>
+              <li><span class="arrow">→</span> A notification will prompt to activate your device's camera <span class="step-badge">2</span></li>
+              <li><span class="arrow">→</span> Point the camera to the QR code on the certificate issued and scan. <span class="step-badge">3</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- STATE 3a: DATA FOUND -->
+        <div id="state-found" class="hidden">
+          <div class="result-wrap">
+            <div class="result-icon found"><i class="fas fa-check"></i></div>
+            <p class="result-label">Data Found</p>
+            <table class="data-table" id="dataTable"></table>
+            <button class="btn-download" id="downloadBtn">
+              DOWNLOAD CERTIFICATE &nbsp;<i class="fas fa-download"></i>
+            </button>
+          </div>
+          <div class="cam-btn-row">
+            <button class="btn-home" id="backHomeBtn2"><i class="fas fa-house"></i> BACK TO HOME</button>
+          </div>
+          <div class="steps-box" style="margin-top:20px;">
+            <div class="steps-header"><span class="steps-bar"></span><h3>Steps for verification</h3></div>
+            <ul class="steps-list">
+              <li><span class="arrow">→</span> Click on "Scan QR code" above <span class="step-badge">1</span></li>
+              <li><span class="arrow">→</span> A notification will prompt to activate your device's camera <span class="step-badge">2</span></li>
+              <li><span class="arrow">→</span> Point the camera to the QR code on the certificate issued and scan. <span class="step-badge">3</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- STATE 3b: NOT FOUND -->
+        <div id="state-notfound" class="hidden">
+          <div class="result-wrap">
+            <div class="result-icon notfound"><i class="fas fa-xmark"></i></div>
+            <p class="result-label notfound-label">Entry Not Found</p>
+            <p class="notfound-sub">No matching certificate record was found for the scanned QR code. Please ensure you are scanning a valid West Bengal Government issued certificate.</p>
+          </div>
+          <div class="cam-btn-row">
+            <button class="btn-home" id="backHomeBtn3"><i class="fas fa-house"></i> BACK TO HOME</button>
+          </div>
+          <div class="steps-box" style="margin-top:20px;">
+            <div class="steps-header"><span class="steps-bar"></span><h3>Steps for verification</h3></div>
+            <ul class="steps-list">
+              <li><span class="arrow">→</span> Click on "Scan QR code" above <span class="step-badge">1</span></li>
+              <li><span class="arrow">→</span> A notification will prompt to activate your device's camera <span class="step-badge">2</span></li>
+              <li><span class="arrow">→</span> Point the camera to the QR code on the certificate issued and scan. <span class="step-badge">3</span></li>
+            </ul>
+          </div>
+        </div>
+
+      </div><!-- /tab-qr -->
+
+      <!-- ══════════════ CERT NO TAB ══════════════ -->
+      <div class="tab-content hidden" id="tab-cert">
+
+        <!-- CERT FORM STATE -->
+        <div id="cert-state-form">
+          <div class="cert-form-wrap">
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="certType" value="birth" checked />
+                <span class="radio-custom birth"></span> Birth
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="certType" value="death" />
+                <span class="radio-custom death"></span> Death
+              </label>
+            </div>
+            <div class="cert-fields">
+              <div class="field-group">
+                <input type="text" id="certNo" class="field-input" placeholder=" " />
+                <label class="field-label" for="certNo">Enter Certificate No <span class="req">*</span></label>
+              </div>
+              <div class="field-group">
+                <input type="text" id="dob" class="field-input" placeholder=" " maxlength="10" />
+                <label class="field-label" for="dob">DOB / DOD <span class="req">*</span></label>
+                <span class="field-hint">DD/MM/YYYY</span>
+              </div>
+            </div>
+            <button class="btn-verify" id="verifyBtn"><i class="fas fa-search"></i> VERIFY</button>
+            <div id="certErrMsg" style="margin-top:14px;"></div>
+          </div>
+        </div>
+
+        <!-- CERT FOUND STATE -->
+        <div id="cert-state-found" class="hidden">
+          <div class="result-wrap">
+            <div class="result-icon found"><i class="fas fa-check"></i></div>
+            <p class="result-label">Data Found</p>
+            <table class="data-table" id="certDataTable"></table>
+            <button class="btn-download" id="certDownloadBtn">
+              DOWNLOAD CERTIFICATE &nbsp;<i class="fas fa-download"></i>
+            </button>
+          </div>
+          <div class="cam-btn-row">
+            <button class="btn-home" id="certBackHomeBtn"><i class="fas fa-house"></i> BACK TO HOME</button>
+          </div>
+          <div class="steps-box" style="margin-top:20px;">
+            <div class="steps-header"><span class="steps-bar"></span><h3>Steps for verification</h3></div>
+            <ul class="steps-list">
+              <li><span class="arrow">→</span> Click on "Scan QR code" above <span class="step-badge">1</span></li>
+              <li><span class="arrow">→</span> A notification will prompt to activate your device's camera <span class="step-badge">2</span></li>
+              <li><span class="arrow">→</span> Point the camera to the QR code on the certificate issued and scan. <span class="step-badge">3</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- CERT NOT FOUND STATE -->
+        <div id="cert-state-notfound" class="hidden">
+          <div class="result-wrap">
+            <div class="result-icon notfound"><i class="fas fa-xmark"></i></div>
+            <p class="result-label notfound-label">Entry Not Found</p>
+            <p class="notfound-sub">No matching certificate found. Please check the Certificate Number and Date.</p>
+          </div>
+          <div class="cam-btn-row">
+            <button class="btn-home" id="certBackHomeBtn2"><i class="fas fa-house"></i> BACK TO HOME</button>
+          </div>
+          <div class="steps-box" style="margin-top:20px;">
+            <div class="steps-header"><span class="steps-bar"></span><h3>Steps for verification</h3></div>
+            <ul class="steps-list">
+              <li><span class="arrow">→</span> Click on "Scan QR code" above <span class="step-badge">1</span></li>
+              <li><span class="arrow">→</span> A notification will prompt to activate your device's camera <span class="step-badge">2</span></li>
+              <li><span class="arrow">→</span> Point the camera to the QR code on the certificate issued and scan. <span class="step-badge">3</span></li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /card -->
+
+    <footer class="site-footer">
+      <p>© 2024 Government of West Bengal | Health &amp; Family Welfare Department</p>
+      <p>Best viewed in Chrome / Edge (latest version)</p>
+    </footer>
+
+  </div><!-- /page-wrapper -->
+
+  <script src="app.js"></script>
+</body>
+</html>
