@@ -57,7 +57,7 @@ async function startCamera(facing) {
   facingMode = facing || facingMode;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
+      video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 }, height: { ideal: 720 } }
     });
     currentStream = stream;
     $('qrVideo').srcObject = stream;
@@ -161,12 +161,9 @@ $('scanBtn').addEventListener('click', () => {
   });
 });
 
-// ── DOWNLOAD CERTIFICATE ──────────────────────────────────────────────────────
-$('downloadBtn').addEventListener('click', function () {
-  const r = this._certData;
+// ── PRINT CERTIFICATE HELPER ─────────────────────────────────────────────────
+function generateCertPrint(r) {
   if (!r) return;
-
-  // Build a simple printable HTML page
   const isD = r.type === 'Death';
   const html = `<!DOCTYPE html>
 <html>
@@ -212,6 +209,11 @@ $('downloadBtn').addEventListener('click', function () {
   win.document.write(html);
   win.document.close();
   setTimeout(() => win.print(), 500);
+}
+
+// ── DOWNLOAD CERTIFICATE (QR Tab) ─────────────────────────────────────────────
+$('downloadBtn').addEventListener('click', function () {
+  generateCertPrint(this._certData);
 });
 
 // ── CERT NO TAB – STATE HELPERS ───────────────────────────────────────────────
