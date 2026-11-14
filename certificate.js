@@ -80,50 +80,12 @@
     </div>`;
 
 
-  // ── 5. Download handler (printable window) ────────────────────────────────
+  // ── 5. Download handler — serves the attached PDF ────────────────────────
   document.getElementById('dlBtn').addEventListener('click', () => {
-    const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8"/>
-  <title>Certificate – ${esc(record.certificateNo)}</title>
-  <style>
-    body { font-family:'Segoe UI',Arial,sans-serif; margin:40px; color:#222; }
-    h1 { text-align:center; font-size:1.1rem; letter-spacing:1px; margin-bottom:4px; }
-    h2 { text-align:center; font-size:0.88rem; color:#555; margin-bottom:28px; }
-    .seal { text-align:center; font-size:3rem; margin-bottom:10px; }
-    .badge { display:inline-block; background:#43a047; color:#fff; border-radius:4px; padding:4px 14px; font-size:0.78rem; margin-bottom:22px; }
-    table { width:100%; border-collapse:collapse; margin:20px 0; }
-    td { padding:10px 14px; border-bottom:1px solid #eee; font-size:0.9rem; }
-    td:first-child { color:#666; width:40%; }
-    td:last-child { font-weight:700; }
-    .footer { text-align:center; margin-top:36px; font-size:0.72rem; color:#999; }
-    @media print { body { margin:20px; } }
-  </style>
-</head>
-<body>
-  <div class="seal">🏛️</div>
-  <h1>GOVERNMENT OF WEST BENGAL</h1>
-  <h2>HEALTH &amp; FAMILY WELFARE DEPARTMENT<br>Janma Mrityu Tathya</h2>
-  <div style="text-align:center"><span class="badge">✔ VERIFIED CERTIFICATE</span></div>
-  <table>
-    <tr><td>Certificate Type</td><td>${esc(record.type)} Certificate</td></tr>
-    <tr><td>Name</td><td>${esc(record.name)}</td></tr>
-    <tr><td>${isD ? 'Date Of Death' : 'Date Of Birth'}</td><td>${esc(isD ? record.dateOfDeath : record.dateOfBirth)}</td></tr>
-    <tr><td>Gender</td><td>${esc(record.gender)}</td></tr>
-    <tr><td>Certificate No.</td><td>${esc(record.certificateNo)}</td></tr>
-    <tr><td>Date Of Issue</td><td>${esc(record.dateOfIssue)}</td></tr>
-  </table>
-  <div class="footer">
-    Verify at: ${esc(certURL)}<br>
-    Printed on: ${new Date().toLocaleDateString('en-IN')}
-  </div>
-</body>
-</html>`;
-    const win = window.open('', '_blank');
-    win.document.write(html);
-    win.document.close();
-    setTimeout(() => win.print(), 500);
+    const a = document.createElement('a');
+    a.href = './D2026406333.pdf';
+    a.download = 'D2026406333.pdf';
+    a.click();
   });
 
 })();
