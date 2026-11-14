@@ -6,7 +6,6 @@
   <title>Certificate – Janma Mrityu Tathya</title>
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     /* ── Certificate page overrides ── */
     .cert-page-wrapper {
@@ -62,25 +61,6 @@
     }
     .cert-row-value { font-size: 0.95rem; color: #1a1a1a; font-weight: 700; }
 
-    /* QR section */
-    .cert-qr-section {
-      border-top: 1px solid #f0f0f0;
-      padding: 20px 28px;
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-    }
-    .cert-qr-label {
-      font-size: 0.72rem; color: #aaa; text-align: center; letter-spacing: 0.5px;
-    }
-    #certQrCanvas { border: 1px solid #eee; border-radius: 6px; }
-
-    /* Cert URL */
-    .cert-url-box {
-      background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
-      padding: 10px 14px; font-size: 0.72rem; color: #555;
-      word-break: break-all; text-align: center; width: 100%;
-      font-family: monospace;
-    }
-
     /* Action buttons */
     .cert-actions {
       display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
@@ -97,8 +77,6 @@
     .btn-cert-action.download:hover { background: #c62828; }
     .btn-cert-action.home { background: #26a69a; color: #fff; }
     .btn-cert-action.home:hover { background: #1e8e82; }
-    .btn-cert-action.print { background: #1565c0; color: #fff; }
-    .btn-cert-action.print:hover { background: #0d47a1; }
 
     /* Not found state */
     .not-found-wrap {
@@ -115,12 +93,11 @@
     .not-found-sub { font-size: 0.85rem; color: #777; max-width: 340px; line-height: 1.6; }
 
     @media print {
-      .cert-actions, .cert-qr-section .btn-cert-action, header, footer { display: none; }
+      .cert-actions, header, footer { display: none; }
       .cert-card { box-shadow: none; }
     }
     @media (max-width: 600px) {
       .cert-body, .cert-actions { padding-left: 16px; padding-right: 16px; }
-      .cert-qr-section { padding-left: 16px; padding-right: 16px; }
       .title-main { font-size: 1.1rem; }
       .title-sub { font-size: 0.84rem; }
     }

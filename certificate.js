@@ -69,9 +69,6 @@
 
     <!-- Action buttons -->
     <div class="cert-actions">
-      <button class="btn-cert-action print" onclick="window.print()">
-        <i class="fas fa-print"></i> PRINT
-      </button>
       <button class="btn-cert-action download" id="dlBtn">
         <i class="fas fa-download"></i> DOWNLOAD CERTIFICATE
       </button>
@@ -80,27 +77,10 @@
           <i class="fas fa-house"></i> BACK TO HOME
         </button>
       </a>
-    </div>
-
-    <!-- QR Code for this URL -->
-    <div class="cert-qr-section">
-      <p class="cert-qr-label" style="font-weight:600;color:#555;font-size:0.8rem;">
-        <i class="fas fa-qrcode"></i>&nbsp; Certificate QR Code
-      </p>
-      <canvas id="certQrCanvas"></canvas>
-      <p class="cert-qr-label">Scan this code to open the certificate directly</p>
-      <div class="cert-url-box">${esc(certURL)}</div>
     </div>`;
 
-  // ── 5. Generate QR code encoding this page's URL ──────────────────────────
-  if (window.QRCode) {
-    QRCode.toCanvas(document.getElementById('certQrCanvas'), certURL, {
-      width: 200, margin: 2,
-      color: { dark: '#1a1a1a', light: '#ffffff' }
-    });
-  }
 
-  // ── 6. Download handler (printable window) ────────────────────────────────
+  // ── 5. Download handler (printable window) ────────────────────────────────
   document.getElementById('dlBtn').addEventListener('click', () => {
     const html = `<!DOCTYPE html>
 <html>
