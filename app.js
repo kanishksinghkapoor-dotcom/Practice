@@ -1,27 +1,9 @@
 /* ============================================================
    WB Certificate Portal – app.js
    Handles: tab switching, camera scanning, QR decode,
-            result display (found / not-found), cert-no verify
+            redirect to certificate.html?id=...
+   Database is loaded from data.js (included before this script)
    ============================================================ */
-
-// ── DEMO DATABASE ────────────────────────────────────────────────────────────
-// Entries will be added here
-const CERT_DB = {
-  "WB-CERT-D2026406333": {
-    type:          "Death",
-    name:          "PURNIMA KAPOOR",
-    dateOfDeath:   "06/11/2026",
-    gender:        "Female",
-    certificateNo: "D/2026/406333",
-    dateOfIssue:   "06/11/2026"
-  }
-};
-
-// Also allow lookup by cert number directly (for the cert-no tab)
-const CERT_BY_NO = {
-  "D/2026/406333": CERT_DB["WB-CERT-D2026406333"],
-  "d/2026/406333": CERT_DB["WB-CERT-D2026406333"]   // lowercase fallback
-};
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
 const $  = id => document.getElementById(id);
@@ -107,43 +89,18 @@ function startQRPolling() {
   }, 300);
 }
 
-// ── QR RESULT HANDLER ────────────────────────────────────────────────────────
+// ── QR RESULT HANDLER — redirects to certificate page ────────────────────────
 function handleQRResult(payload) {
   // Always redirect to Purnima Kapoor entry regardless of which QR is scanned
-  const record = CERT_DB["WB-CERT-D2026406333"];
-
-  if (record) {
-    renderFoundResult(record);
-    showState('state-found');
+  const id = 'WB-CERT-D2026406333';
+  if (CERT_DB[id]) {
+    window.location.href = `./certificate.html?id=${encodeURIComponent(id)}`;
   } else {
     showState('state-notfound');
   }
 }
 
-function renderFoundResult(r) {
-  const rows = r.type === 'Death'
-    ? [
-        ['Name',           r.name],
-        ['Date Of Death',  r.dateOfDeath],
-        ['Gender',         r.gender],
-        ['Certificate No', r.certificateNo],
-        ['Date Of Issue',  r.dateOfIssue]
-      ]
-    : [
-        ['Name',           r.name],
-        ['Date Of Birth',  r.dateOfBirth],
-        ['Gender',         r.gender],
-        ['Certificate No', r.certificateNo],
-        ['Date Of Issue',  r.dateOfIssue]
-      ];
 
-  $('dataTable').innerHTML = rows.map(([label, val]) =>
-    `<tr><td>${esc(label)}</td><td>${esc(val)}</td></tr>`
-  ).join('');
-
-  // Store for download
-  $('downloadBtn')._certData = r;
-}
 
 // ── SCAN BUTTON (home → scanning) ────────────────────────────────────────────
 $('scanBtn').addEventListener('click', () => {
@@ -161,71 +118,13 @@ $('scanBtn').addEventListener('click', () => {
   });
 });
 
-// ── PRINT CERTIFICATE HELPER ─────────────────────────────────────────────────
-function generateCertPrint(r) {
-  if (!r) return;
-  const isD = r.type === 'Death';
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8"/>
-  <title>Certificate – ${r.certificateNo}</title>
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #222; }
-    h1 { text-align:center; font-size:1.1rem; letter-spacing:1px; }
-    h2 { text-align:center; font-size:0.9rem; color:#555; margin-bottom:30px; }
-    .seal { text-align:center; font-size:3rem; margin-bottom:10px; }
-    table { width:100%; border-collapse:collapse; margin:20px 0; }
-    td { padding:10px 14px; border-bottom:1px solid #eee; font-size:0.92rem; }
-    td:first-child { color:#666; width:40%; }
-    td:last-child { font-weight:600; }
-    .footer { text-align:center; margin-top:40px; font-size:0.75rem; color:#888; }
-    .badge { background:#43a047; color:#fff; display:inline-block; border-radius:4px; padding:4px 14px; font-size:0.8rem; margin-bottom:20px; }
-    @media print { body { margin:20px; } }
-  </style>
-</head>
-<body>
-  <div class="seal">🏛️</div>
-  <h1>GOVERNMENT OF WEST BENGAL</h1>
-  <h2>HEALTH &amp; FAMILY WELFARE DEPARTMENT<br>
-      Janma Mrityu Tathya</h2>
-  <div style="text-align:center"><span class="badge">✔ VERIFIED CERTIFICATE</span></div>
-  <table>
-    <tr><td>Certificate Type</td><td>${esc(r.type)} Certificate</td></tr>
-    <tr><td>Name</td><td>${esc(r.name)}</td></tr>
-    ${isD ? `<tr><td>Date Of Death</td><td>${esc(r.dateOfDeath)}</td></tr>` : `<tr><td>Date Of Birth</td><td>${esc(r.dateOfBirth)}</td></tr>`}
-    <tr><td>Gender</td><td>${esc(r.gender)}</td></tr>
-    <tr><td>Certificate No</td><td>${esc(r.certificateNo)}</td></tr>
-    <tr><td>Date Of Issue</td><td>${esc(r.dateOfIssue)}</td></tr>
-  </table>
-  <div class="footer">
-    This certificate is digitally verifiable via jyutathya.wb.gov.in<br>
-    Printed on: ${new Date().toLocaleDateString('en-IN')}
-  </div>
-</body>
-</html>`;
 
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
-  setTimeout(() => win.print(), 500);
-}
-
-// ── DOWNLOAD CERTIFICATE (QR Tab) ─────────────────────────────────────────────
-$('downloadBtn').addEventListener('click', function () {
-  generateCertPrint(this._certData);
-});
 
 // ── CERT NO TAB – STATE HELPERS ───────────────────────────────────────────────
-const CERT_STATES = ['cert-state-form', 'cert-state-found', 'cert-state-notfound'];
+const CERT_STATES = ['cert-state-form', 'cert-state-notfound'];
 function showCertState(id) {
   CERT_STATES.forEach(s => $(s).classList.toggle('hidden', s !== id));
 }
-
-// BACK TO HOME buttons inside cert tab → back to form
-['certBackHomeBtn','certBackHomeBtn2'].forEach(id => {
-  $(id).addEventListener('click', () => showCertState('cert-state-form'));
-});
 
 // ── CERT NO TAB – VERIFY ─────────────────────────────────────────────────────
 const dobInput = $('dob');
@@ -253,40 +152,23 @@ $('verifyBtn').addEventListener('click', () => {
     $('verifyBtn').disabled = false;
     $('verifyBtn').innerHTML = '<i class="fas fa-search"></i> VERIFY';
 
-    // Lookup — flexible matching (case-insensitive, whitespace-tolerant)
+    // Lookup — find the DB key whose cert number + type + date match
     const normalise = s => s.replace(/\s/g,'').toLowerCase();
-    const record = CERT_BY_NO[certNo] ||
-                   CERT_BY_NO[certNo.toUpperCase()] ||
-                   Object.values(CERT_BY_NO).find(r =>
-                     normalise(r.certificateNo) === normalise(certNo)
-                   );
+    const foundKey = Object.keys(CERT_DB).find(key => {
+      const rec = CERT_DB[key];
+      const certNoMatch = normalise(rec.certificateNo) === normalise(certNo);
+      const typeMatch   = rec.type.toLowerCase() === type.toLowerCase();
+      const dateField   = type === 'death' ? rec.dateOfDeath : rec.dateOfBirth;
+      const dateMatch   = dateField && dateField.trim() === dob.trim();
+      return certNoMatch && typeMatch && dateMatch;
+    });
 
-    const dateField   = type === 'death' ? record?.dateOfDeath : record?.dateOfBirth;
-    const typeMatches = record && record.type.toLowerCase() === type.toLowerCase();
-    const dateMatches = dateField && dateField.trim() === dob.trim();
-
-    if (record && typeMatches && dateMatches) {
-      // FOUND — populate table then show found state
-      const isD = record.type === 'Death';
-      $('certDataTable').innerHTML = [
-        ['Name',           record.name],
-        [isD ? 'Date Of Death' : 'Date Of Birth', isD ? record.dateOfDeath : record.dateOfBirth],
-        ['Gender',         record.gender],
-        ['Certificate No', record.certificateNo],
-        ['Date Of Issue',  record.dateOfIssue]
-      ].map(([l,v]) => `<tr><td>${esc(l)}</td><td>${esc(v)}</td></tr>`).join('');
-
-      $('certDownloadBtn')._certData = record;
-      showCertState('cert-state-found');
+    if (foundKey) {
+      window.location.href = './certificate.html?id=' + encodeURIComponent(foundKey);
     } else {
       showCertState('cert-state-notfound');
     }
   }, 1400);
 });
 
-// ── CERT DOWNLOAD ─────────────────────────────────────────────────────────────
-$('certDownloadBtn').addEventListener('click', function () {
-  const r = this._certData;
-  if (!r) return;
-  generateCertPrint(r);
-});
+

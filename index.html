@@ -176,28 +176,8 @@
           </div>
         </div>
 
-        <!-- CERT FOUND STATE -->
-        <div id="cert-state-found" class="hidden">
-          <div class="result-wrap">
-            <div class="result-icon found"><i class="fas fa-check"></i></div>
-            <p class="result-label">Data Found</p>
-            <table class="data-table" id="certDataTable"></table>
-            <button class="btn-download" id="certDownloadBtn">
-              DOWNLOAD CERTIFICATE &nbsp;<i class="fas fa-download"></i>
-            </button>
-          </div>
-          <div class="cam-btn-row">
-            <button class="btn-home" id="certBackHomeBtn"><i class="fas fa-house"></i> BACK TO HOME</button>
-          </div>
-          <div class="steps-box" style="margin-top:20px;">
-            <div class="steps-header"><span class="steps-bar"></span><h3>Steps for verification</h3></div>
-            <ul class="steps-list">
-              <li><span class="arrow">→</span> Click on "Scan QR code" above <span class="step-badge">1</span></li>
-              <li><span class="arrow">→</span> A notification will prompt to activate your device's camera <span class="step-badge">2</span></li>
-              <li><span class="arrow">→</span> Point the camera to the QR code on the certificate issued and scan. <span class="step-badge">3</span></li>
-            </ul>
-          </div>
-        </div>
+
+
 
         <!-- CERT NOT FOUND STATE -->
         <div id="cert-state-notfound" class="hidden">
@@ -230,6 +210,7 @@
 
   </div><!-- /page-wrapper -->
 
+  <script src="./data.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

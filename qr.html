@@ -32,11 +32,14 @@
       <tr><td>Certificate No</td><td>D/2026/406333</td></tr>
       <tr><td>Date Of Issue</td><td>06/11/2026</td></tr>
     </table>
-    <p class="label">QR Payload: WB-CERT-D2026406333</p>
+    <p class="label">URL: <span id="qrUrl"></span></p>
     <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
   </div>
   <script>
-    QRCode.toCanvas(document.getElementById('qr'), 'WB-CERT-D2026406333', {
+    const certId  = 'WB-CERT-D2026406333';
+    const certURL = window.location.origin + '/certificate.html?id=' + encodeURIComponent(certId);
+    document.getElementById('qrUrl').textContent = certURL;
+    QRCode.toCanvas(document.getElementById('qr'), certURL, {
       width: 220, margin: 2,
       color: { dark: '#1a1a1a', light: '#ffffff' }
     });

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certificate – Janma Mrityu Tathya</title>
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    /* ── Certificate page overrides ── */
+    .cert-page-wrapper {
+      position: relative; z-index: 1;
+      max-width: 680px; margin: 0 auto;
+      padding: 0 16px 48px;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    .cert-card {
+      background: #fff; border-radius: 8px; width: 100%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13); overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    /* Status banner */
+    .cert-status-bar {
+      background: #43a047; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; padding: 14px 20px;
+      font-size: 0.9rem; font-weight: 700; letter-spacing: 0.8px;
+    }
+    .cert-status-bar.error { background: #e53935; }
+    .cert-status-bar i { font-size: 1.1rem; }
+
+    /* Cert detail body */
+    .cert-body { padding: 24px 28px 28px; }
+
+    .cert-title-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .cert-type-badge {
+      display: inline-block; padding: 5px 14px;
+      border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.8px; text-transform: uppercase;
+    }
+    .cert-type-badge.death { background: #ffebee; color: #c62828; }
+    .cert-type-badge.birth { background: #e8f5e9; color: #2e7d32; }
+
+    .cert-id { font-size: 0.75rem; color: #aaa; font-family: monospace; }
+
+    /* Data rows */
+    .cert-data-block { margin-bottom: 24px; }
+    .cert-row {
+      display: flex; align-items: baseline;
+      padding: 11px 0; border-bottom: 1px solid #f0f0f0;
+    }
+    .cert-row:last-child { border-bottom: none; }
+    .cert-row-label {
+      width: 42%; font-size: 0.85rem; color: #888; font-weight: 500; flex-shrink: 0;
+    }
+    .cert-row-value { font-size: 0.95rem; color: #1a1a1a; font-weight: 700; }
+
+    /* QR section */
+    .cert-qr-section {
+      border-top: 1px solid #f0f0f0;
+      padding: 20px 28px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .cert-qr-label {
+      font-size: 0.72rem; color: #aaa; text-align: center; letter-spacing: 0.5px;
+    }
+    #certQrCanvas { border: 1px solid #eee; border-radius: 6px; }
+
+    /* Cert URL */
+    .cert-url-box {
+      background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
+      padding: 10px 14px; font-size: 0.72rem; color: #555;
+      word-break: break-all; text-align: center; width: 100%;
+      font-family: monospace;
+    }
+
+    /* Action buttons */
+    .cert-actions {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+      padding: 0 28px 24px;
+    }
+    .btn-cert-action {
+      display: flex; align-items: center; gap: 8px;
+      padding: 11px 22px; border: none; border-radius: 4px;
+      font-size: 0.82rem; font-weight: 700; letter-spacing: 0.8px;
+      cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-cert-action:hover { transform: translateY(-1px); }
+    .btn-cert-action.download { background: #e53935; color: #fff; }
+    .btn-cert-action.download:hover { background: #c62828; }
+    .btn-cert-action.home { background: #26a69a; color: #fff; }
+    .btn-cert-action.home:hover { background: #1e8e82; }
+    .btn-cert-action.print { background: #1565c0; color: #fff; }
+    .btn-cert-action.print:hover { background: #0d47a1; }
+
+    /* Not found state */
+    .not-found-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 48px 28px; gap: 14px; text-align: center;
+    }
+    .not-found-icon {
+      width: 70px; height: 70px; border-radius: 50%;
+      background: #e53935; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+    }
+    .not-found-title { font-size: 1.1rem; font-weight: 700; color: #c62828; }
+    .not-found-sub { font-size: 0.85rem; color: #777; max-width: 340px; line-height: 1.6; }
+
+    @media print {
+      .cert-actions, .cert-qr-section .btn-cert-action, header, footer { display: none; }
+      .cert-card { box-shadow: none; }
+    }
+    @media (max-width: 600px) {
+      .cert-body, .cert-actions { padding-left: 16px; padding-right: 16px; }
+      .cert-qr-section { padding-left: 16px; padding-right: 16px; }
+      .title-main { font-size: 1.1rem; }
+      .title-sub { font-size: 0.84rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-pattern" aria-hidden="true"></div>
+
+  <div class="cert-page-wrapper">
+
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="logo-circle">
+        <div class="logo-inner">
+          <svg viewBox="0 0 60 55" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="33">
+            <path d="M30 46s-16-10-16-22a8 8 0 0 1 16-2 8 8 0 0 1 16 2c0 12-16 22-16 22z" fill="#26a69a"/>
+            <circle cx="30" cy="14" r="5" fill="white"/>
+            <path d="M22 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          </svg>
+          <span class="logo-text-bn">জন্ম মৃত্যু তথ্য</span>
+          <span class="logo-text-en">Janma Mrityu Tathya</span>
+        </div>
+      </div>
+      <div class="header-titles">
+        <h1 class="title-main">GOVERNMENT OF WEST BENGAL</h1>
+        <h2 class="title-sub">HEALTH &amp; FAMILY WELFARE DEPARTMENT</h2>
+      </div>
+    </header>
+
+    <!-- CERTIFICATE CARD (populated by JS) -->
+    <section class="cert-card" id="certCard">
+      <div id="certContent">
+        <!-- filled by certificate.js -->
+        <div style="padding:40px;text-align:center;color:#aaa;font-size:0.9rem;">
+          <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;margin-bottom:12px;display:block;"></i>
+          Loading certificate…
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>© 2024 Government of West Bengal | Health &amp; Family Welfare Department</p>
+      <p>Best viewed in Chrome / Edge (latest version)</p>
+    </footer>
+
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./certificate.js"></script>
+</body>
+</html>
